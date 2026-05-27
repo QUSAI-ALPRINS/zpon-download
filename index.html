@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بقالة المليكي - تحميل التطبيق</title>
+    <!-- خط جميل من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(145deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 30px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .logo {
+            font-size: 60px;
+            background: #f0f4ff;
+            width: 90px;
+            height: 90px;
+            line-height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+        .sub {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .btn {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            font-size: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(30,60,114,0.3);
+        }
+        .btn:hover { background: #2a5298; transform: scale(1.02); }
+        .btn:disabled { background: #aaa; transform: none; cursor: not-allowed; }
+        #info {
+            margin-top: 15px;
+            font-size: 15px;
+            color: #444;
+        }
+        .loader {
+            display: none;
+            width: 35px;
+            height: 35px;
+            margin: 15px auto 0;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .badge {
+            display: inline-block;
+            background: #eef2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #1e3c72;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">🛒</div>
+        <h1>بقالة المليكي</h1>
+        <p class="sub">لإدارة ديون الزبائن بسهولة</p>
+        <button class="btn" id="downloadBtn">📲 تحميل التطبيق الآن</button>
+        <div id="info"></div>
+        <div class="loader" id="loader"></div>
+        <div id="badge" class="badge"></div>
+        <div class="footer">جميع الحقوق محفوظة © 2026</div>
+    </div>
+
+    <script>
+        // 1. هذه الدالة تتعرف على نوع المعالج
+        function getArchitecture() {
+            var ua = navigator.userAgent;
+            // إذا كان في الهاتف كلمة arm64 أو aarch64 => معالج جديد
+            if (ua.indexOf('arm64') !== -1 || ua.indexOf('aarch64') !== -1) {
+                return 'arm64-v8a';
+            }
+            // وإلا فهو معالج قديم (armv7 أو غيره)
+            return 'armeabi-v7a';
+        }
+
+        // 2. عند الضغط على الزر
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            var btn = document.getElementById('downloadBtn');
+            var info = document.getElementById('info');
+            var loader = document.getElementById('loader');
+            var badge = document.getElementById('badge');
+
+            // تعطيل الزر وإظهار التحميل
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري التحميل...';
+            loader.style.display = 'block';
+            info.textContent = '';
+
+            // تعرف على المعالج
+            var arch = getArchitecture();
+            badge.textContent = 'نوع جهازك: ' + (arch === 'arm64-v8a' ? 'جديد (64 بت)' : 'قديم (32 بت)');
+
+            // ⬇️ ضع اسمك واسم المستودع ورقم الإصدار هنا ⬇️
+            var username = 'QUSAI-ALPRINS';
+            var repo = 'zpon-download';
+            var tag = '1.2.0+2';
+            // تكوين رابط التحميل
+            var url = 'https://github.com/' + username + '/' + repo + '/releases/download/' + tag + '/app-' + arch + '.apk';
+
+            // بدء التحميل
+            window.location.href = url;
+
+            // بعد ثانية، نعيد الزر
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = '📲 تحميل التطبيق الآن';
+                loader.style.display = 'none';
+                info.textContent = 'تم بدء التحميل. إذا لم يبدأ، اضغط الزر مرة أخرى.';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحميل تطبيق - بقالة المليكي</title>
-    <!-- خط جميل من جوجل -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,6 +64,7 @@
             margin-top: 15px;
             font-size: 15px;
             color: #444;
+            line-height: 1.7;
         }
         .loader {
             display: none;
@@ -91,78 +91,128 @@
             color: #1e3c72;
             margin-top: 12px;
         }
+        .warn { color: #e67e22; }
+        .ok { color: #27ae60; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="logo">🛒</div>
         <h1>بقالـــــة المليكــــي</h1>
-        <p class="sub">لعرض ديونگ ومدفوعاتگ باكملها بسهولــــــة </p>
-        <p class="sub">برمجة وتطوير وتصميم قصي المليكي778010546</p>
+        <p class="sub">لعرض ديونگ ومدفوعاتگ باكملها بسهولــــــة</p>
+        <p class="sub">برمجة وتطوير وتصميم قصي المليكي 778010546</p>
+        
         <button class="btn" id="downloadBtn">📲 تحميل التطبيق الآن</button>
+        
         <div id="info"></div>
         <div class="loader" id="loader"></div>
         <div id="badge" class="badge"></div>
+        
         <div class="footer">جميع الحقوق محفوظة لدى قصي سوفت © 2026</div>
     </div>
 
     <script>
-        // دالة محسنة للتعرف على المعالج
-        function getArchitecture() {
-            // 1. الطريقة الحديثة (userAgentData) - تدعمها معظم الهواتف الحديثة
-            if (navigator.userAgentData) {
-                var platform = navigator.userAgentData.platform;
-                if (platform && platform.toLowerCase().includes('arm64')) {
-                    return 'arm64-v8a';
+        // ==========================================
+        // دالة التعرف على المعالج - مُصلحة بالكامل
+        // ==========================================
+        async function getArchitecture() {
+            var ua = navigator.userAgent.toLowerCase();
+
+            // ── الطريقة 1: API الحديثة والأكثر دقة ──
+            // تدعمها Chrome 90+ و Edge و Opera على Android
+            if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                try {
+                    var vals = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
+                    
+                    // مثال: { architecture: "arm", bitness: "64" }
+                    if (vals.architecture && vals.bitness) {
+                        var arch = vals.architecture.toLowerCase();
+                        var bits = vals.bitness;
+
+                        if ((arch === "arm" || arch === "aarch64") && bits === "64") {
+                            return { apk: "arm64-v8a", name: "64 بت", method: "API دقيقة" };
+                        }
+                        if (arch === "arm" && bits === "32") {
+                            return { apk: "armeabi-v7a", name: "32 بت", method: "API دقيقة" };
+                        }
+                    }
+                } catch (e) {
+                    // API غير متاحة أو رفضها المستخدم
                 }
             }
 
-            // 2. الطريقة القديمة (userAgent)
-            var ua = navigator.userAgent.toLowerCase();
-            if (ua.includes('arm64') || ua.includes('aarch64')) {
-                return 'arm64-v8a';
+            // ── الطريقة 2: فحص userAgent الكامل ──
+            // نادراً ما يظهر في Android الحديث، لكن نحتاط
+            if (ua.includes("aarch64") || ua.includes("arm64")) {
+                return { apk: "arm64-v8a", name: "64 بت", method: "UserAgent" };
             }
-            if (ua.includes('armv7') || ua.includes('armv7l')) {
-                return 'armeabi-v7a';
-            }
-
-            // 3. التحقق من عدد نوى المعالج (hardwareConcurrency)
-            if (navigator.hardwareConcurrency && navigator.hardwareConcurrency >= 6) {
-                return 'arm64-v8a';
+            if (ua.includes("armv7") || ua.includes("armv7l")) {
+                return { apk: "armeabi-v7a", name: "32 بت", method: "UserAgent" };
             }
 
-            // 4. افتراضي
-            return 'armeabi-v7a';
+            // ── الطريقة 3: فحص طراز الجهاز المشهور ──
+            var model = ua.match(/\(([^)]+)\)/);
+            if (model) {
+                var m = model[1].toLowerCase();
+                // أي جهاز Samsung S8 فما فوق / Note8 فما فوق = 64 بت
+                var s64 = /sm-g95|sm-g96|sm-g97|sm-g98|sm-g99|sm-n95|sm-n96|sm-n97|sm-n98|sm-f90|sm-a73|sm-a53/;
+                // Xiaomi حديث
+                var x64 = /mi 9|mi 10|mi 11|mi 12|redmi note 9|redmi note 1[0-9]|poco f[2-9]|poco x[3-9]/;
+                // Pixel / OnePlus / Realme حديثة
+                var o64 = /pixel [3-9]|oneplus [6-9]|oneplus 1[0-9]|realme gt/;
+                
+                if (s64.test(m) || x64.test(m) || o64.test(m)) {
+                    return { apk: "arm64-v8a", name: "64 بت", method: "طراز الجهاز" };
+                }
+            }
+
+            // ── الطريقة 4: افتراض آمن ──
+            // 32-bit تعمل على 64-bit أيضاً، والعكس غير صحيح!
+            // لذلك عند الشك نختار 32-bit حتى لا نُعطل أجهزة القديمة
+            return { 
+                apk: "armeabi-v7a", 
+                name: "32 بت (عام)", 
+                method: "افتراضي آمن",
+                note: "النسخة 32 بت تعمل على جميع الأجهزة بما فيها 64 بت"
+            };
         }
 
-        // عند الضغط على الزر
-        document.getElementById('downloadBtn').addEventListener('click', function() {
-            var btn = document.getElementById('downloadBtn');
-            var info = document.getElementById('info');
-            var loader = document.getElementById('loader');
-            var badge = document.getElementById('badge');
+        // ==========================================
+        // حدث الضغط على الزر
+        // ==========================================
+        document.getElementById("downloadBtn").addEventListener("click", async function() {
+            var btn = document.getElementById("downloadBtn");
+            var info = document.getElementById("info");
+            var loader = document.getElementById("loader");
+            var badge = document.getElementById("badge");
 
             btn.disabled = true;
-            btn.textContent = '⏳ جاري التحميل...';
-            loader.style.display = 'block';
-            info.textContent = '';
+            btn.textContent = "⏳ جاري التعرف...";
+            loader.style.display = "block";
+            info.innerHTML = "";
+            badge.textContent = "";
 
-            var arch = getArchitecture();
-            badge.textContent = 'نوع جهازك: ' + (arch === 'arm64-v8a' ? 'جديد (64 بت)' : 'قديم (32 بت)');
+            var result = await getArchitecture();
 
-            var username = 'QUSAI-ALPRINS';
-            var repo = 'zpon-download';
-            var tag = 'v1.2.2+2';
-            var url = 'https://github.com/' + username + '/' + repo + '/releases/download/' + tag + '/app-' + arch + '.apk';
+            badge.textContent = "جهازك: " + result.name + " | طريقة: " + result.method;
+            
+            var msg = '<span class="ok">✓ تم التعرف على الجهاز</span><br>';
+            if (result.note) {
+                msg += '<span class="warn">' + result.note + '</span>';
+            }
+            info.innerHTML = msg;
 
+            btn.textContent = "⬇️ جاري تحميل " + result.apk + "...";
+
+            var url = "https://github.com/QUSAI-ALPRINS/zpon-download/releases/download/v1.2.2+2/app-" + result.apk + ".apk";
             window.location.href = url;
 
             setTimeout(function() {
                 btn.disabled = false;
-                btn.textContent = '📲 تحميل التطبيق الآن';
-                loader.style.display = 'none';
-                info.textContent = 'تم بدء التحميل. إذا لم يبدأ، اضغط الزر مرة أخرى.';
-            }, 1000);
+                btn.textContent = "📲 تحميل التطبيق الآن";
+                loader.style.display = "none";
+                info.innerHTML += '<br><br>إذا لم يبدأ التحميل تلقائياً: <a href="' + url + '" style="color:#1e3c72;font-weight:bold;">اضغط هنا</a>';
+            }, 1500);
         });
     </script>
 </body>

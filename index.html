@@ -34,34 +34,65 @@
             border-radius: 50%;
             margin: 0 auto 15px;
         }
-        h1 { font-size: 28px; color: #1e3c72; margin-bottom: 5px; }
-        .sub { color: #666; font-size: 14px; margin-bottom: 25px; }
+        h1 {
+            font-size: 28px;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+        .sub {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
         .btn {
-            background: #1e3c72; color: white; border: none; width: 100%;
-            padding: 18px; font-size: 20px; border-radius: 15px;
-            cursor: pointer; font-family: 'Cairo', sans-serif;
-            font-weight: 700; transition: all 0.3s;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            font-size: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s;
             box-shadow: 0 8px 20px rgba(30,60,114,0.3);
         }
         .btn:hover { background: #2a5298; transform: scale(1.02); }
         .btn:disabled { background: #aaa; transform: none; cursor: not-allowed; }
-        #info { margin-top: 15px; font-size: 15px; color: #444; line-height: 1.7; }
+        #info {
+            margin-top: 15px;
+            font-size: 15px;
+            color: #444;
+            line-height: 1.7;
+        }
         .loader {
-            display: none; width: 35px; height: 35px;
-            margin: 15px auto 0; border: 4px solid #e0e0e0;
-            border-top: 4px solid #1e3c72; border-radius: 50%;
+            display: none;
+            width: 35px;
+            height: 35px;
+            margin: 15px auto 0;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer { margin-top: 25px; font-size: 12px; color: #aaa; }
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #aaa;
+        }
         .badge {
-            display: inline-block; background: #eef2ff;
-            padding: 5px 15px; border-radius: 20px;
-            font-size: 13px; color: #1e3c72; margin-top: 12px;
+            display: inline-block;
+            background: #eef2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #1e3c72;
+            margin-top: 12px;
         }
         .warn { color: #e67e22; }
         .ok { color: #27ae60; }
-        .debug { font-size: 11px; color: #999; margin-top: 8px; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -76,129 +107,111 @@
         <div id="info"></div>
         <div class="loader" id="loader"></div>
         <div id="badge" class="badge"></div>
-        <div class="debug" id="debug"></div>
         
         <div class="footer">جميع الحقوق محفوظة لدى قصي سوفت © 2026</div>
     </div>
 
     <script>
         // ==========================================
-        // دالة التعرف على المعالج - نهائية ومُحسّنة
+        // دالة التعرف على المعالج - مُصلحة بالكامل
         // ==========================================
         async function getArchitecture() {
             var ua = navigator.userAgent.toLowerCase();
-            var platform = (navigator.platform || '').toLowerCase();
-            var debugInfo = [];
 
-            // ── الطريقة 1: navigator.platform (الأكثر موثوقية على Android) ──
-            // Chrome 64-bit على Android: "Linux armv8l" أو "Linux aarch64"
-            // Chrome 32-bit على Android: "Linux armv7l"
-            if (platform) {
-                debugInfo.push('platform: ' + navigator.platform);
-                if (platform.includes('armv8') || platform.includes('aarch64')) {
-                    return { apk: 'arm64-v8a', name: '64 بت', method: 'navigator.platform', debug: debugInfo };
-                }
-                if (platform.includes('armv7')) {
-                    return { apk: 'armeabi-v7a', name: '32 بت', method: 'navigator.platform', debug: debugInfo };
-                }
-            }
-
-            // ── الطريقة 2: getHighEntropyValues (Chrome 90+) ──
+            // ── الطريقة 1: API الحديثة والأكثر دقة ──
+            // تدعمها Chrome 90+ و Edge و Opera على Android
             if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
                 try {
-                    var vals = await navigator.userAgentData.getHighEntropyValues(['architecture', 'bitness', 'model']);
-                    debugInfo.push('UAData: ' + JSON.stringify(vals));
+                    var vals = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
                     
-                    if (vals.bitness) {
-                        var arch = (vals.architecture || '').toLowerCase();
+                    // مثال: { architecture: "arm", bitness: "64" }
+                    if (vals.architecture && vals.bitness) {
+                        var arch = vals.architecture.toLowerCase();
                         var bits = vals.bitness;
-                        
-                        if ((arch === 'arm' || arch === 'aarch64') && bits === '64') {
-                            return { apk: 'arm64-v8a', name: '64 بت', method: 'UAData API', debug: debugInfo };
+
+                        if ((arch === "arm" || arch === "aarch64") && bits === "64") {
+                            return { apk: "arm64-v8a", name: "64 بت", method: "API دقيقة" };
                         }
-                        if (arch === 'arm' && bits === '32') {
-                            return { apk: 'armeabi-v7a', name: '32 بت', method: 'UAData API', debug: debugInfo };
+                        if (arch === "arm" && bits === "32") {
+                            return { apk: "armeabi-v7a", name: "32 بت", method: "API دقيقة" };
                         }
                     }
-                    // إذا bitness فارغ، نستمر للطريقة التالية
                 } catch (e) {
-                    debugInfo.push('UAData error: ' + e.message);
+                    // API غير متاحة أو رفضها المستخدم
                 }
             }
 
-            // ── الطريقة 3: فحص userAgent الكامل (للأجهزة القديمة) ──
-            if (ua.includes('aarch64') || ua.includes('arm64')) {
-                return { apk: 'arm64-v8a', name: '64 بت', method: 'UserAgent', debug: debugInfo };
+            // ── الطريقة 2: فحص userAgent الكامل ──
+            // نادراً ما يظهر في Android الحديث، لكن نحتاط
+            if (ua.includes("aarch64") || ua.includes("arm64")) {
+                return { apk: "arm64-v8a", name: "64 بت", method: "UserAgent" };
             }
-            if (ua.includes('armv7') || ua.includes('armv7l')) {
-                return { apk: 'armeabi-v7a', name: '32 بت', method: 'UserAgent', debug: debugInfo };
+            if (ua.includes("armv7") || ua.includes("armv7l")) {
+                return { apk: "armeabi-v7a", name: "32 بت", method: "UserAgent" };
             }
 
-            // ── الطريقة 4: طراز الجهاز من userAgent (قاعدة بيانات) ──
-            var modelMatch = ua.match(/\(([^)]+)\)/);
-            if (modelMatch) {
-                var m = modelMatch[1].toLowerCase();
-                debugInfo.push('model: ' + m);
+            // ── الطريقة 3: فحص طراز الجهاز المشهور ──
+            var model = ua.match(/\(([^)]+)\)/);
+            if (model) {
+                var m = model[1].toLowerCase();
+                // أي جهاز Samsung S8 فما فوق / Note8 فما فوق = 64 بت
+                var s64 = /sm-g95|sm-g96|sm-g97|sm-g98|sm-g99|sm-n95|sm-n96|sm-n97|sm-n98|sm-f90|sm-a73|sm-a53/;
+                // Xiaomi حديث
+                var x64 = /mi 9|mi 10|mi 11|mi 12|redmi note 9|redmi note 1[0-9]|poco f[2-9]|poco x[3-9]/;
+                // Pixel / OnePlus / Realme حديثة
+                var o64 = /pixel [3-9]|oneplus [6-9]|oneplus 1[0-9]|realme gt/;
                 
-                // هواتف معروفة بأنها 64-bit فقط
-                var known64 = /sm-g95|sm-g96|sm-g97|sm-g98|sm-g99|sm-n95|sm-n96|sm-n97|sm-n98|sm-f90|sm-a73|sm-a53|sm-a54|sm-s90|sm-m54|sm-m34|mi 9|mi 10|mi 11|mi 12|mi 13|redmi note 9|redmi note 1[0-9]|poco f[2-9]|poco x[3-9]|pixel [3-9]|pixel [a-z]|oneplus [6-9]|oneplus 1[0-9]|realme gt|realme [0-9]+pro/;
-                
-                if (known64.test(m)) {
-                    return { apk: 'arm64-v8a', name: '64 بت', method: 'طراز الجهاز', debug: debugInfo };
+                if (s64.test(m) || x64.test(m) || o64.test(m)) {
+                    return { apk: "arm64-v8a", name: "64 بت", method: "طراز الجهاز" };
                 }
             }
 
-            // ── الطريقة 5: افتراض آمن ──
-            // 32-bit يعمل على 64-bit أيضاً! العكس غير صحيح.
+            // ── الطريقة 4: افتراض آمن ──
+            // 32-bit تعمل على 64-bit أيضاً، والعكس غير صحيح!
+            // لذلك عند الشك نختار 32-bit حتى لا نُعطل أجهزة القديمة
             return { 
-                apk: 'armeabi-v7a', 
-                name: '32 بت (عام)', 
-                method: 'افتراضي آمن',
-                note: 'النسخة 32 بت تعمل على جميع الأجهزة',
-                debug: debugInfo
+                apk: "armeabi-v7a", 
+                name: "32 بت (عام)", 
+                method: "افتراضي آمن",
+                note: "النسخة 32 بت تعمل على جميع الأجهزة بما فيها 64 بت"
             };
         }
 
         // ==========================================
         // حدث الضغط على الزر
         // ==========================================
-        document.getElementById('downloadBtn').addEventListener('click', async function() {
-            var btn = document.getElementById('downloadBtn');
-            var info = document.getElementById('info');
-            var loader = document.getElementById('loader');
-            var badge = document.getElementById('badge');
-            var debug = document.getElementById('debug');
+        document.getElementById("downloadBtn").addEventListener("click", async function() {
+            var btn = document.getElementById("downloadBtn");
+            var info = document.getElementById("info");
+            var loader = document.getElementById("loader");
+            var badge = document.getElementById("badge");
 
             btn.disabled = true;
-            btn.textContent = '⏳ جاري التعرف...';
-            loader.style.display = 'block';
-            info.innerHTML = '';
-            badge.textContent = '';
-            debug.textContent = '';
+            btn.textContent = "⏳ جاري التعرف...";
+            loader.style.display = "block";
+            info.innerHTML = "";
+            badge.textContent = "";
 
             var result = await getArchitecture();
 
-            badge.textContent = 'جهازك: ' + result.name + ' | طريقة: ' + result.method;
+            badge.textContent = "جهازك: " + result.name + " | طريقة: " + result.method;
             
-            var msg = '<span class="ok">✓ تم التعرف</span>';
+            var msg = '<span class="ok">✓ تم التعرف على الجهاز</span><br>';
             if (result.note) {
-                msg += '<br><span class="warn">' + result.note + '</span>';
+                msg += '<span class="warn">' + result.note + '</span>';
             }
             info.innerHTML = msg;
 
-            // عرض معلومات التصحيح (للتطوير فقط - يمكن إخفاؤها لاحقاً)
-            debug.textContent = result.debug.join(' | ');
+            btn.textContent = "⬇️ جاري تحميل " + result.apk + "...";
 
-            btn.textContent = '⬇️ جاري تحميل ' + result.apk + '...';
-
-            var url = 'https://github.com/QUSAI-ALPRINS/zpon-download/releases/download/v1.2.2+2/app-' + result.apk + '.apk';
+            var url = "https://github.com/QUSAI-ALPRINS/zpon-download/releases/download/v1.2.2+2/app-" + result.apk + ".apk";
             window.location.href = url;
 
             setTimeout(function() {
                 btn.disabled = false;
-                btn.textContent = '📲 تحميل التطبيق الآن';
-                loader.style.display = 'none';
-                info.innerHTML += '<br><br>إذا لم يبدأ: <a href="' + url + '" style="color:#1e3c72;font-weight:bold;">اضغط هنا</a>';
+                btn.textContent = "📲 تحميل التطبيق الآن";
+                loader.style.display = "none";
+                info.innerHTML += '<br><br>إذا لم يبدأ التحميل تلقائياً: <a href="' + url + '" style="color:#1e3c72;font-weight:bold;">اضغط هنا</a>';
             }, 1500);
         });
     </script>

@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحميل تطبيق - بقالة المليكي</title>
+    <title>تحميل تطبيق بقالة المليكي للزبائن</title>
+
+    <!-- كود إثبات ملكية جوجل -->
+    <meta name="google-site-verification" content="7g3uTInjNEsof8zx2Kx7w5spJUizWoORm-6T0ftiA7U" />
+
+    <!-- وصف الموقع مخصص فقط لزبائن المحل -->
+    <meta name="description" content="التطبيق الرسمي المخصص حصراً لزبائن بقالة المليكي او ماتُسمى بقالة الامير او بقالة مصطفى الامير بقالة الأمير. تحميل التطبيق لعرض كشف حساب الزبون وتفاصيل الديون الخاصة ببقالة المليكي او ما تُسمى بقالة الأمير فقط.">
+    
+    <!-- كلمات مفتاحية حصرية لاسم البقالة فقط -->
+    <meta name="keywords" content="بقالة المليكي, بقالة الأمير, تطبيق بقالة المليكي, تطبيق بقالة الأمير, كشف حساب بقالة المليكي, ديون زبائن بقالة المليكي, حسابي في بقالة الأمير, تحميل تطبيق بقالة المليكي, تحميل تطبيق بقالة الأمير, تطبيق بقالة المليكي للزبائن, تطبيق بقالة الأمير للزبائن">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* (نفس تنسيق CSS السابق) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Cairo', sans-serif;
@@ -60,36 +72,17 @@
         }
         .btn:hover { background: #2a5298; transform: scale(1.02); }
         .btn:disabled { background: #aaa; transform: none; cursor: not-allowed; }
-        #info {
-            margin-top: 15px;
-            font-size: 15px;
-            color: #444;
-            line-height: 1.7;
-        }
+        #info { margin-top: 15px; font-size: 15px; color: #444; line-height: 1.7; }
         .loader {
-            display: none;
-            width: 35px;
-            height: 35px;
-            margin: 15px auto 0;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #1e3c72;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            display: none; width: 35px; height: 35px; margin: 15px auto 0;
+            border: 4px solid #e0e0e0; border-top: 4px solid #1e3c72;
+            border-radius: 50%; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #aaa;
-        }
+        .footer { margin-top: 25px; font-size: 12px; color: #aaa; }
         .badge {
-            display: inline-block;
-            background: #eef2ff;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #1e3c72;
-            margin-top: 12px;
+            display: inline-block; background: #eef2ff; padding: 5px 15px;
+            border-radius: 20px; font-size: 13px; color: #1e3c72; margin-top: 12px;
         }
         .warn { color: #e67e22; }
         .ok { color: #27ae60; }
@@ -98,9 +91,9 @@
 <body>
     <div class="card">
         <div class="logo">🛒</div>
-        <h1>بقالـــــة المليكــــي</h1>
-        <p class="sub">لعرض ديونگ ومدفوعاتگ باكملها بسهولــــــة</p>
-        <p class="sub">برمجة وتطوير وتصميم قصي المليكي 778010546</p>
+        <h1>بقالة المليكي والأمير</h1>
+        <p class="sub">خاص بزبائن بقالة المليكي وبقالة الأمير فقط</p>
+        <p class="sub">برمجة وتطوير: قصي المليكي</p>
         
         <button class="btn" id="downloadBtn">📲 تحميل التطبيق الآن</button>
         
@@ -108,27 +101,18 @@
         <div class="loader" id="loader"></div>
         <div id="badge" class="badge"></div>
         
-        <div class="footer">جميع الحقوق محفوظة لدى قصي سوفت © 2026</div>
+        <div class="footer">جميع الحقوق محفوظة © 2026</div>
     </div>
 
     <script>
-        // ==========================================
-        // دالة التعرف على المعالج - مُصلحة بالكامل
-        // ==========================================
         async function getArchitecture() {
             var ua = navigator.userAgent.toLowerCase();
-
-            // ── الطريقة 1: API الحديثة والأكثر دقة ──
-            // تدعمها Chrome 90+ و Edge و Opera على Android
             if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
                 try {
                     var vals = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
-                    
-                    // مثال: { architecture: "arm", bitness: "64" }
                     if (vals.architecture && vals.bitness) {
                         var arch = vals.architecture.toLowerCase();
                         var bits = vals.bitness;
-
                         if ((arch === "arm" || arch === "aarch64") && bits === "64") {
                             return { apk: "arm64-v8a", name: "64 بت", method: "API دقيقة" };
                         }
@@ -136,50 +120,32 @@
                             return { apk: "armeabi-v7a", name: "32 بت", method: "API دقيقة" };
                         }
                     }
-                } catch (e) {
-                    // API غير متاحة أو رفضها المستخدم
-                }
+                } catch (e) {}
             }
-
-            // ── الطريقة 2: فحص userAgent الكامل ──
-            // نادراً ما يظهر في Android الحديث، لكن نحتاط
             if (ua.includes("aarch64") || ua.includes("arm64")) {
                 return { apk: "arm64-v8a", name: "64 بت", method: "UserAgent" };
             }
             if (ua.includes("armv7") || ua.includes("armv7l")) {
                 return { apk: "armeabi-v7a", name: "32 بت", method: "UserAgent" };
             }
-
-            // ── الطريقة 3: فحص طراز الجهاز المشهور ──
             var model = ua.match(/\(([^)]+)\)/);
             if (model) {
                 var m = model[1].toLowerCase();
-                // أي جهاز Samsung S8 فما فوق / Note8 فما فوق = 64 بت
                 var s64 = /sm-g95|sm-g96|sm-g97|sm-g98|sm-g99|sm-n95|sm-n96|sm-n97|sm-n98|sm-f90|sm-a73|sm-a53/;
-                // Xiaomi حديث
                 var x64 = /mi 9|mi 10|mi 11|mi 12|redmi note 9|redmi note 1[0-9]|poco f[2-9]|poco x[3-9]/;
-                // Pixel / OnePlus / Realme حديثة
                 var o64 = /pixel [3-9]|oneplus [6-9]|oneplus 1[0-9]|realme gt/;
-                
                 if (s64.test(m) || x64.test(m) || o64.test(m)) {
                     return { apk: "arm64-v8a", name: "64 بت", method: "طراز الجهاز" };
                 }
             }
-
-            // ── الطريقة 4: افتراض آمن ──
-            // 32-bit تعمل على 64-bit أيضاً، والعكس غير صحيح!
-            // لذلك عند الشك نختار 32-bit حتى لا نُعطل أجهزة القديمة
             return { 
                 apk: "armeabi-v7a", 
                 name: "32 بت (عام)", 
                 method: "افتراضي آمن",
-                note: "النسخة 32 بت تعمل على جميع الأجهزة بما فيها 64 بت"
+                note: "النسخة 32 بت تعمل على جميع الأجهزة"
             };
         }
 
-        // ==========================================
-        // حدث الضغط على الزر
-        // ==========================================
         document.getElementById("downloadBtn").addEventListener("click", async function() {
             var btn = document.getElementById("downloadBtn");
             var info = document.getElementById("info");
@@ -194,12 +160,9 @@
 
             var result = await getArchitecture();
 
-            badge.textContent = "جهازك: " + result.name + " | طريقة: " + result.method;
+            badge.textContent = "جهازك: " + result.name;
             
             var msg = '<span class="ok">✓ تم التعرف على الجهاز</span><br>';
-            if (result.note) {
-                msg += '<span class="warn">' + result.note + '</span>';
-            }
             info.innerHTML = msg;
 
             btn.textContent = "⬇️ جاري تحميل " + result.apk + "...";
@@ -211,7 +174,7 @@
                 btn.disabled = false;
                 btn.textContent = "📲 تحميل التطبيق الآن";
                 loader.style.display = "none";
-                info.innerHTML += '<br><br>إذا لم يبدأ التحميل تلقائياً: <a href="' + url + '" style="color:#1e3c72;font-weight:bold;">اضغط هنا</a>';
+                info.innerHTML += '<br><br>إذا لم يبدأ التحميل: <a href="' + url + '" style="color:#1e3c72;font-weight:bold;">اضغط هنا</a>';
             }, 1500);
         });
     </script>
